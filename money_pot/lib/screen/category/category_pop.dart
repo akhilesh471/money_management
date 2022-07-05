@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/db/category/category_db.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
 import 'package:spendee/models/category/category.dart';
 
 ValueNotifier<CategoryType> selectedCategoryNotifier =
@@ -36,17 +38,20 @@ Future<void> popup(BuildContext context) async {
             ),
           ),
           ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final _name = _textcontroller.text;
                 if (_name.isEmpty) {
                   return;
                 }
-               final _category= CategoryModel(
+                final _category = CategoryModel(
                     id: DateTime.now().microsecondsSinceEpoch.toString(),
                     name: _name,
                     type: selectedCategoryNotifier.value);
-                    CategoryDb.instance.insertCategory(_category);
-                    Navigator.of(ctx1).pop();
+                context
+                    .read<CategoryBloc>()
+                    .add(CategoryEvent.addCategoryEvent(model: _category));
+              
+                Navigator.of(ctx1).pop();
               },
               child: Text('Submit'))
         ],

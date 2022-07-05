@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/constants/constants.dart';
 import 'package:spendee/db/transactions/transaction_db.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
 import 'package:spendee/screen/add/addData.dart';
 import 'package:spendee/screen/add/expense.dart';
 import 'package:spendee/screen/add/income.dart';
@@ -11,6 +13,8 @@ class AddScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -35,7 +39,7 @@ class AddScreen extends StatelessWidget {
             AddExpense(),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton(backgroundColor: green,
           child: Icon(
             Icons.add,
             size: 32,

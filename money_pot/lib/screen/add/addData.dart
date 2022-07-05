@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/constants/constants.dart';
 import 'package:spendee/db/category/category_db.dart';
 import 'package:spendee/db/transactions/transaction_db.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
+import 'package:spendee/logic/transaction/bloc/transaction_bloc.dart';
 import 'package:spendee/models/category/category.dart';
 import 'package:spendee/models/transactions/transactions.dart';
 
 String? _categoryid;
+final formkey = GlobalKey<FormState>();
 
 class AddIncomeExpense extends StatefulWidget {
   const AddIncomeExpense({Key? key}) : super(key: key);
@@ -46,9 +50,10 @@ class _ViewExpenseState extends State<AddIncomeExpense> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 37),
-              child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20),
+                child: Form(
+                  key: formkey,
                   child: Column(
                     children: [
                       SizedBox(
@@ -72,12 +77,12 @@ class _ViewExpenseState extends State<AddIncomeExpense> {
                             height: 20,
                           ),
                           addData('Amount', 'Amount', TextInputType.number,
-                              _amountTextEditingController),
+                              _amountTextEditingController, 'Enter the amount'),
                           SizedBox(
                             height: 20,
                           ),
                           addData('Notes', 'Notes ', TextInputType.text,
-                              _notesTextEditingController),
+                              _notesTextEditingController, 'Enter the notes'),
                           SizedBox(
                             height: 20,
                           ),
@@ -106,44 +111,47 @@ class _ViewExpenseState extends State<AddIncomeExpense> {
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold)),
-                              DropdownButton(
-                                hint: Text('Select Category'),
-                                value: _categoryid,
-                                items: (_selectedCategoryType ==
-                                            CategoryType.income
-                                        ? CategoryDb
-                                            .instance.incomeCategoryListNotifier
-                                        : CategoryDb.instance
-                                            .expenseCategoryListNotifier)
-                                    .value
-                                    .map((e) {
-                                  return DropdownMenuItem(
-                                    value: e.id,
-                                    child: Text(e.name),
-                                    onTap: () {
-                                      _selectedCategoryModel = e;
+                              BlocBuilder<CategoryBloc, CategoryState>(
+                                builder: (context, state) {
+                                  return DropdownButton(
+                                    hint: Text('Select Category'),
+                                    value: _categoryid,
+                                    items: (_selectedCategoryType ==
+                                                CategoryType.income
+                                            ? state.categoryIncomeList
+                                            : state.categoryExpenseList)
+                                        .map((e) {
+                                      return DropdownMenuItem(
+                                        value: e.id,
+                                        child: Text(e.name),
+                                        onTap: () {
+                                          _selectedCategoryModel = e;
+                                        },
+                                      );
+                                    }).toList(),
+                                    onChanged: (selectedValue) {
+                                      setState(() {
+                                        _categoryid = selectedValue.toString();
+                                      });
                                     },
                                   );
-                                }).toList(),
-                                onChanged: (selectedValue) {
-                                  setState(() {
-                                    _categoryid = selectedValue.toString();
-                                  });
                                 },
                               ),
                             ],
                           ),
-                          SizedBox(
+                      const    SizedBox(
                             height: 14,
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              addTransaction();
-                              _categoryid = null;
+                              if (formkey.currentState!.validate()) {
+                                addTransaction();
+                                _categoryid = null;
 
-                              Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              }
                             },
-                            child: Text('Submit'),
+                            child:const Text('Submit'),
                           ),
                         ]),
                       ),
@@ -174,7 +182,7 @@ class _ViewExpenseState extends State<AddIncomeExpense> {
       );
 
   Row addData(String name, String hint, TextInputType keyboard,
-      TextEditingController _controller) {
+      TextEditingController _controller, String text) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -184,25 +192,27 @@ class _ViewExpenseState extends State<AddIncomeExpense> {
         SizedBox(
             width: 198,
             child: TextFormField(
+                validator: ((value) {
+                  if (value == null || value.isEmpty) {
+                    return text;
+                  } else {
+                    return null;
+                  }
+                }),
                 controller: _controller,
                 keyboardType: keyboard,
                 decoration: InputDecoration(
                   hintText: hint,
-                  border: OutlineInputBorder(borderSide: BorderSide()),
+                  border:const OutlineInputBorder(borderSide: BorderSide()),
                 )))
       ],
     );
   }
 
-  Future<void> addTransaction() async {
+  Future<dynamic> addTransaction() async {
     final _notesText = _notesTextEditingController.text;
     final _amountText = _amountTextEditingController.text;
-    if (_amountText.isEmpty) {
-      return;
-    }
-    if (_notesText.isEmpty) {
-      return;
-    }
+
     if (_categoryid == null) {
       return;
     }
@@ -215,15 +225,17 @@ class _ViewExpenseState extends State<AddIncomeExpense> {
       return;
     }
 
-    final _model = TransactionModel(id: DateTime.now().microsecond,
+    final _model = TransactionModel(
+        id: DateTime.now().microsecond,
         notes: _notesText,
         amount: _parsedAmount,
         date: date,
         type: _selectedCategoryType!,
         category: _selectedCategoryModel!);
-        
-    TransactionDb.instance.addTransaction(_model);
-    TransactionDb.instance.refreshUitrans();
-    date=DateTime.now();
+    context
+        .read<TransactionBloc>()
+        .add(TransactionEvent.addTransaction(model: _model));
+
+    date = DateTime.now();
   }
 }

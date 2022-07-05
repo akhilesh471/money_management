@@ -1,6 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/constants/constants.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
 import 'package:spendee/screen/add/add_tabbar.dart';
 import 'package:spendee/screen/category/category.dart';
 import 'package:spendee/screen/settings/settings.dart';

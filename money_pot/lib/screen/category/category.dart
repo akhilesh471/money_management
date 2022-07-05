@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/constants/constants.dart';
 import 'package:spendee/db/category/category_db.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
 import 'package:spendee/models/category/category.dart';
 import 'package:spendee/screen/category/category_pop.dart';
 import 'package:spendee/screen/category/expense.dart';
@@ -19,8 +21,8 @@ class _CategoryScreenState extends State<CategoryScreen>
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);  
-   CategoryDb().refreshUi();
+    _tabController = TabController(length: 2, vsync: this);
+   
     super.initState();
   }
 
@@ -43,13 +45,18 @@ class _CategoryScreenState extends State<CategoryScreen>
               ),
             ]),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [IncomeCat(), ExpenseCat()],
+      body: BlocBuilder<CategoryBloc, CategoryState>(
+        builder: (context, state) {
+          return TabBarView(
+            controller: _tabController,
+            children: [IncomeCat(), ExpenseCat()],
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: green,
         child: Icon(
-          Icons.add, 
+          Icons.add,
           size: 32,
         ),
         onPressed: () {
@@ -60,12 +67,6 @@ class _CategoryScreenState extends State<CategoryScreen>
           //   print('expense');
           //   final _sample=CategoryModel(id: DateTime.now().millisecondsSinceEpoch.toString(), name: 'travel', type:CategoryType.income );
           // CategoryDb().insertCategory(_sample);
-          
-
-  
-  
-
-
 
           // }
         },

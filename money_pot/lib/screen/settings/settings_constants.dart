@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/db/transactions/transaction_db.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
+import 'package:spendee/logic/transaction/bloc/transaction_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 //mport 'package:url_launcher/url_launcher.dart';
-
 
 List<IconData> icn = [
   Icons.notifications_active_outlined,
@@ -39,13 +41,14 @@ Future<void> resetPopBox(BuildContext context) async {
                   },
                   child: Text('No'),
                 ),
-                TextButton(
-                  onPressed: () {
-                    TransactionDb.instance.clearData();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('yes'),
-                ),
+               TextButton(
+                      onPressed: () {
+                        context.read<TransactionBloc>().add(TransactionEvent.resetdata());
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('yes'),
+                    )
+                  
               ],
             ),
           ],
@@ -68,15 +71,12 @@ Future<void> helpAndSupport() async {
 }
 
 Future<dynamic> about(BuildContext context) async {
-   showAboutDialog(
-context: context,
-applicationIcon: Image(image: AssetImage('lib/assets/mainlogo.png'),height: 38,width:30),
-applicationLegalese: "© 2022 company",
-applicationName: "Money Pot",
-applicationVersion: "version 1.1.0",
-
-
+  showAboutDialog(
+    context: context,
+    applicationIcon: Image(
+        image: AssetImage('lib/assets/mainlogo.png'), height: 38, width: 30),
+    applicationLegalese: "© 2022 company",
+    applicationName: "Money Pot",
+    applicationVersion: "version 1.0.3",
   );
 }
-
-

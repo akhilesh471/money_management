@@ -22,13 +22,17 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
   @override
   Widget build(BuildContext context) {
     getData();
-    return Scaffold(appBar: AppBar(backgroundColor: green,title:Text( 'Privacy&Policy')),
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: green,
+          title:const Text('Privacy&Policy'),
+        ),
         body: SingleChildScrollView(
             child: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(textFormFile),
-      ),
-    )));
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(textFormFile),
+          ),
+        )));
   }
 }

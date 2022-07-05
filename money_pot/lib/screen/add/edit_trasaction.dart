@@ -1,23 +1,26 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/constants/constants.dart';
 import 'package:spendee/db/category/category_db.dart';
 import 'package:spendee/db/transactions/transaction_db.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
+import 'package:spendee/logic/transaction/bloc/transaction_bloc.dart';
 import 'package:spendee/models/category/category.dart';
 import 'package:spendee/models/transactions/transactions.dart';
 
 late DateTime editDate;
 int? temp;
 
-
 class editTransaction extends StatefulWidget {
-   CategoryModel changedCategory;
+  CategoryModel changedCategory;
   final notes;
   final amount;
   final date;
   final int id;
-   CategoryType catType;
+  CategoryType catType;
 
   editTransaction({
     Key? key,
@@ -36,22 +39,21 @@ class editTransaction extends StatefulWidget {
 class _ViewExpenseState extends State<editTransaction> {
   final _notesTextEditingController = TextEditingController();
   final _amountTextEditingController = TextEditingController();
- CategoryModel? _selectedCategoryModel;
- String? _categoryid;
- 
+  CategoryModel? _selectedCategoryModel;
+  String? _categoryid;
   @override
-  Widget build(BuildContext context1) {
-
+  void initState() {
     _notesTextEditingController.text = widget.notes;
     _amountTextEditingController.text = widget.amount.toString();
-   
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context1) {
     print('intex in showpage${_selectedCategoryModel}');
     editDate = widget.date;
-   
-    return ValueListenableBuilder(
-        valueListenable: TransactionDb.instance.expenseTransactionListNotifier,
-        builder:
-            (BuildContext ctx, List<TransactionModel> transaction, Widget? _) {
+
+
           return Scaffold(
             appBar: AppBar(
               backgroundColor: darkgreen,
@@ -110,43 +112,50 @@ class _ViewExpenseState extends State<editTransaction> {
                                     _notesTextEditingController),
                                 SizedBox(
                                   height: 40,
-                                ), Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [ Text('Category',
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Category',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold)),
-                                    DropdownButton(
-                                    hint: Text('${widget.changedCategory}'),
-                                    value: _categoryid,
-                                    items: ( widget.catType==
-                                                CategoryType.income
-                                            ? CategoryDb
-                                                .instance.incomeCategoryListNotifier
-                                            : CategoryDb.instance
-                                                .expenseCategoryListNotifier)
-                                        .value
-                                        .map((e) {
-                                      return DropdownMenuItem(
-                                        value: e.id,
-                                        child: Text(e.name),
-                                        onTap: () {
-                                          _selectedCategoryModel = e;
-                                              print('intex in dropdown${_selectedCategoryModel}');
-                                        },
-                                      );
-                                    }).toList(),
-                                    onChanged: (selectedValue) {
-                                      setState(() {
-                                        _categoryid = selectedValue.toString();
-                                        print('hello');
-                                        print('category id is$_categoryid');
-                                      });
-                                    },
-                              ),
+                                    BlocBuilder<CategoryBloc, CategoryState>(
+                                      builder: (context, state) {
+                                        return DropdownButton(
+                                          hint:
+                                              Text('${widget.changedCategory}'),
+                                          value: _categoryid,
+                                          items: (widget.catType ==
+                                                      CategoryType.income
+                                                  ? state.categoryIncomeList
+                                                  : state.categoryExpenseList)
+                                              
+                                              .map((e) {
+                                            return DropdownMenuItem(
+                                              value: e.id,
+                                              child: Text(e.name),
+                                              onTap: () {
+                                                _selectedCategoryModel = e;
+                                                print('intex in dropdown');
+                                              },
+                                            );
+                                          }).toList(),
+                                          onChanged: (selectedValue) {
+                                            setState(() {
+                                              _categoryid =
+                                                  selectedValue.toString();
+                                              print('hello');
+                                              print('category id is');
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
                                   ],
                                 ),
-                             
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
@@ -179,7 +188,7 @@ class _ViewExpenseState extends State<editTransaction> {
               )),
             ),
           );
-        });
+       
   }
 
   Row addData(String name, String hint, TextInputType keyboard,
@@ -208,8 +217,8 @@ class _ViewExpenseState extends State<editTransaction> {
     final _amount = _amountTextEditingController.text;
     final _amt = double.parse(_amount);
     print(editDate);
-    CategoryModel category=_selectedCategoryModel??widget.changedCategory;
-    
+    CategoryModel category = _selectedCategoryModel ?? widget.changedCategory;
+
     final model = TransactionModel(
         id: id,
         notes: _notes,
@@ -217,10 +226,12 @@ class _ViewExpenseState extends State<editTransaction> {
         date: editDate,
         type: widget.catType,
         category: category);
-    TransactionDb.instance.UpdateTransaction(model, id);
- 
-   TransactionDb.instance.getAllTransaction();
-   TransactionDb.instance.refreshUitrans();
+    // TransactionDb.instance.UpdateTransaction(model, id);
+    context
+        .read<TransactionBloc>()
+        .add(TransactionEvent.updateTransaction(model: model, id: id));
+    //  TransactionDb.instance.getAllTransaction();
+    //  TransactionDb.instance.refreshUitrans();
   }
 
   Future<void> deletePopup(BuildContext context) async {
@@ -240,9 +251,11 @@ class _ViewExpenseState extends State<editTransaction> {
               ),
               TextButton(
                 onPressed: () {
-                  TransactionDb.instance.deleteTransaction(widget.id);
+                  context
+                      .read<TransactionBloc>()
+                      .add(TransactionEvent.deleteTransaction(id: widget.id));
                   int count = 0;
-Navigator.of(context).popUntil((_) => count++ >= 2);
+                  Navigator.of(context).popUntil((_) => count++ >= 2);
                 },
                 child: Text('Yes'),
               )

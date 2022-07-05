@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spendee/functions/chart_function.dart';
+import 'package:spendee/logic/bloc/category_bloc.dart';
+import 'package:spendee/logic/transaction/bloc/transaction_bloc.dart';
 
 import 'package:spendee/models/category/category.dart';
 import 'package:spendee/models/transactions/transactions.dart';
@@ -35,29 +38,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     getNotification();
 
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme:
-            ThemeData(
-            //   textTheme: TextTheme(bodyText1: TextStyle(fontSize: 10),
-            // bodyLarge: TextStyle(fontSize: 10),
-            // headline1: TextStyle(fontSize: 10),
-            // headline2: TextStyle(fontSize: 10),
-            // headline3: TextStyle(fontSize: 10),
-            // headline4: TextStyle(fontSize: 10),
-            // headline5: TextStyle(fontSize: 10),
-            // headline6: TextStyle(fontSize: 10),
-            // bodyMedium: TextStyle(fontSize: 10),
-            // bodyText2: TextStyle(fontSize: 10),
-            
-            
-            
-            
-            
-            // )
-            ),
-        home: SplashScreen(
-          value: value,
-        ));
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => CategoryBloc(),
+        ),
+        BlocProvider(
+          create: (context) => TransactionBloc(),
+        ),
+      ],
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+              //   textTheme: TextTheme(bodyText1: TextStyle(fontSize: 10),
+              // bodyLarge: TextStyle(fontSize: 10),
+              // headline1: TextStyle(fontSize: 10),
+              // headline2: TextStyle(fontSize: 10),
+              // headline3: TextStyle(fontSize: 10),
+              // headline4: TextStyle(fontSize: 10),
+              // headline5: TextStyle(fontSize: 10),
+              // headline6: TextStyle(fontSize: 10),
+              // bodyMedium: TextStyle(fontSize: 10),
+              // bodyText2: TextStyle(fontSize: 10),
+
+              // )
+              ),
+          home: SplashScreen(
+            value: value,
+          )),
+    );
   }
 }

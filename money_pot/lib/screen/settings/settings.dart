@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spendee/constants/constants.dart';
 import 'package:spendee/db/transactions/transaction_db.dart';
-import 'package:spendee/screen/add/addData.dart';
 import 'package:spendee/screen/settings/notification.dart';
 import 'package:spendee/screen/settings/privacy_policy.dart';
-
 import 'package:spendee/screen/settings/settings_constants.dart';
-import 'package:spendee/screen/settings/splash.dart';
 
 String notification_Key = 'Notification';
 bool? status;
-
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
-
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
-
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   showNotification(bool state) async {
@@ -29,8 +24,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TransactionDb.instance.refreshUitrans();
-final height=MediaQuery.of(context).size.height;
+   
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: heading,
@@ -40,9 +35,8 @@ final height=MediaQuery.of(context).size.height;
         child: SafeArea(
           child: Column(
             children: [
-              Container(
-               
-                height: height*0.5,
+              SizedBox(
+                height: height * 0.5,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
                     return ListTile(
@@ -55,7 +49,7 @@ final height=MediaQuery.of(context).size.height;
                         ),
                         title: Text(
                           settingstitle[index],
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         trailing: (index == 0)
@@ -82,10 +76,11 @@ final height=MediaQuery.of(context).size.height;
                   itemCount: 6,
                 ),
               ),
-              Container(height: height*0.3,
+              Container(
+                height: height * 0.3,
                 child: Center(
-                child: Text(
-              'Version 1.1.0',
+                    child: Text(
+                  'Version 1.0.3',
                 )),
               )
             ],
@@ -105,8 +100,9 @@ switchFunction(int index, BuildContext context) {
       resetPopBox(context);
       break;
     case 2:
-      print('jdskf');
-
+      Share.share(
+        'https://play.google.com/store/apps/details?id=in.brototype.money_pot',
+      );
       break;
     case 3:
       helpAndSupport();

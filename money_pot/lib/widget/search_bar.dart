@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spendee/db/transactions/transaction_db.dart';
+import 'package:spendee/logic/transaction/bloc/transaction_bloc.dart';
 import 'package:spendee/models/transactions/transactions.dart';
   TextEditingController? searchEditingControl = TextEditingController();
 
@@ -30,18 +32,17 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
               child: !_folded
                   ? TextField(
                       onChanged: ((value) {
-                        TransactionDb.instance.transactionListNotifier.value =
-                            TransactionDb.instance.transactionListNotifier.value
-                                .where((TransactionModel model) =>
-                                    model.category.name.toLowerCase().contains(value.toLowerCase()))
-                                .toList();
-                        if (value == '') {
-                          TransactionDb.instance.refreshUitrans();
-                        }
+                        // TransactionDb.instance.transactionListNotifier.value =
+                        //     TransactionDb.instance.transactionListNotifier.value
+                        //         .where((TransactionModel model) =>
+                        //             model.notes.toLowerCase().contains(value.toLowerCase()))
+                        //         .toList();
+                        context.read<TransactionBloc>().add(TransactionEvent.SearchInTransaction(text: value));
+                        
                       }),
                       controller: searchEditingControl,
                       decoration: InputDecoration(
-                          hintText: 'Search',
+                          hintText: 'Search your notes',
                           hintStyle: TextStyle(color: Colors.blue[300]),
                           border: InputBorder.none), // InputDecoration
                     ) // TextField
@@ -71,7 +72,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
                         _folded = !_folded;
                       
                         searchEditingControl!.clear();
-                        TransactionDb.instance.refreshUitrans();
+                     
                       });
                     }),
               ))

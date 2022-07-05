@@ -26,7 +26,6 @@ class _HaiState extends State<Hai> {
 
   @override
   Widget build(BuildContext context) {
-    print('jdbjbads');
     
     return Scaffold(
       appBar: AppBar(
@@ -64,8 +63,7 @@ class _HaiState extends State<Hai> {
                   backgroundColor: darkgreen,
                   minimumSize: Size.fromHeight(80)),
               onPressed: () async{
-                print('ontap1');
-                CategoryDb.instance.defaultCategories();
+                // CategoryDb.instance.defaultCategories();
                 final prefs= await SharedPreferences.getInstance();
                prefs.setBool(key_value, true);
               

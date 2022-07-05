@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ">=2.16.1 <3.0.0"
@@ -27,20 +27,18 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  animated_splash_screen: ^1.2.0
-  cupertino_icons: ^1.0.2
   curved_navigation_bar: ^1.0.3
   fl_chart: ^0.50.0
   flutter:
     sdk: flutter
+  flutter_bloc: ^8.0.1
   flutter_datetime_picker: ^1.5.1
   flutter_local_notifications: ^9.4.0
-  flutter_slidable: ^1.2.0
   font_awesome_flutter: ^10.1.0
-  hive: ^2.1.0
+  freezed_annotation: ^2.0.3
   hive_flutter: ^1.1.0
   intl: ^0.17.0
-  month_year_picker: ^0.1.0+1
+  share_plus: ^4.0.4
   shared_preferences: ^2.0.13
   smooth_page_indicator: ^1.0.0+2
   url_launcher: ^6.0.20
@@ -50,6 +48,7 @@ dev_dependencies:
   flutter_lints: ^1.0.0
   flutter_test:
     sdk: flutter
+  freezed: ^2.0.3+1
   hive_generator: ^1.1.2
 
 # For information on the generic Dart part of this file, see the

@@ -1,8 +1,5 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spendee/screen/home/home_page.dart';
-import 'package:spendee/screen/home/transaction.dart';
 import 'package:spendee/screen/splash_onboard_screen/on_board_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,20 +17,20 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
   }
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SizedBox(
       height: double.infinity,
       child: Image.asset(
-        'lib/assets/splashgif1.gif',
+        'lib/assets/splashimage.png',
         fit: BoxFit.cover,
       ),
     ));
   }
 
   Future<void> goto() async {
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 3));
     Navigator.of(context)
         .pushReplacement(MaterialPageRoute(builder: (ctx) => HomeScreen()));
   }
@@ -42,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (widget.value == true) {
       goto();
     } else {
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(Duration(seconds: 3));
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (ctx) => Hai(),
